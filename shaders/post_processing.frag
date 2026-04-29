@@ -8,6 +8,8 @@ uniform sampler2D cloudTEX;
 uniform sampler2D depthTex;
 uniform bool wireframe;
 
+uniform float time;
+uniform float rainIntensity;
 uniform vec2 resolution;
 
 #define HDR(col, exps) 1.0 - exp(-col * exps)
@@ -22,15 +24,21 @@ vec3 TonemapACES(vec3 x)
 	return (x * (A * x + B)) / (x * (C * x + D) + E);
 }
 
-
 void main()
 {
-	
-	//FragColor = vec4(0.5,0.1,0.8,1.0);
 	vec4 cloud = texture(cloudTEX, TexCoords);
 	vec4 bg = texture(screenTexture, TexCoords);
 	float mixVal = (texture(depthTex, TexCoords).r < 1.0 ? 0.0 : 1.0);
 	vec4 col = mix(bg, cloud, (!wireframe ? mixVal : 0.0));
+
+	// Rain Effect Overlay
+	if (rainIntensity > 0.0) {
+		vec2 rainUV = TexCoords * vec2(10.0, 1.0) + vec2(time * 0.4, time * 3.5);
+		float rainLine = fract(sin(dot(floor(rainUV * vec2(8.0, 2.0)), vec2(12.9898, 78.233))) * 43758.5453);
+		float rainStrength = smoothstep(0.96, 1.0, rainLine) * smoothstep(0.0, 0.4, fract(rainUV.y));
+		vec3 rainColor = vec3(0.7, 0.75, 0.85);
+		col.rgb = mix(col.rgb, rainColor, rainStrength * rainIntensity * 0.4);
+	}
 
 	const float gamma = 2.2;
     const float exposure = 3.0;

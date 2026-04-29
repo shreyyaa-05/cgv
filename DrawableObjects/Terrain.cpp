@@ -25,7 +25,7 @@ Terrain::Terrain(int gl)
 	octaves = 13;
 	frequency = 0.01;
 	grassCoverage = 0.65;
-	tessMultiplier = 1.0;
+	tessMultiplier = 0.25;
 	dispFactor = 20.0;
 
 	fogFalloff = 1.5;

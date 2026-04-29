@@ -1,36 +1,25 @@
-/x64/*
-/Debug/*
-!/Debug/assimp-vc140-mt.dll
-!/Debug/freetype.dll
-resources/C6W.png
-resources/D6.png
-resources/c10.png
-resources/cow.obj
-resources/cube.mtl
-resources/cube.obj
-resources/d10.jpg
-resources/diffuse.jpg
-resources/head.mtl
-resources/head.obj
-resources/heightmap.jpg
-resources/ireland.jpg
-resources/monkey.mtl
-resources/monkey.obj
-resources/plane2.mtl
-resources/plane2.obj
-resources/terrainTexture.png
-resources/untitled.mtl
-resources/untitled.obj
-Main_.cpp
-.vs/
-imgui.ini
-shaders/3dperlin_shadertoy.txt
-shaders/worley3d.comp
-build/ 
-settings.json
-TerrainEngine
+# Build
+build/
+x64/
+Debug/
+Release/
+out/
 
-# dependencies
-Include/outcome.hpp
-Include/tiny_obj_loader.h
-Include/tiny_obj_loader.cc
+# Visual Studio
+.vs/
+*.vcxproj.user
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+
+# binaries
+*.exe
+*.obj
+*.pdb
+*.lib
+*.dll
+
+# ImGui config optional
+imgui.ini

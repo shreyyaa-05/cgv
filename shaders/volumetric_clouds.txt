@@ -325,7 +325,7 @@ float raymarchToLight(vec3 o, float stepSize, vec3 lightDir, float originalDensi
 
 	float T = 1.0;
 
-	for(int i = 0; i < 3; i++)
+	for(int i = 0; i < 6; i++)
 	{
 		pos = startPos + coneRadius*noiseKernel[i]*float(i);
 
@@ -380,7 +380,7 @@ vec4 raymarchToCloud(vec3 startPos, vec3 endPos, vec3 bg, out vec4 cloudPos){
 
 	//float volumeHeight = planeMax.y - planeMin.y;
 
-	const int nSteps = 24;//int(mix(48.0, 96.0, clamp( len/SPHERE_DELTA - 1.0,0.0,1.0) ));
+	const int nSteps = 64;//int(mix(48.0, 96.0, clamp( len/SPHERE_DELTA - 1.0,0.0,1.0) ));
 	
 	float ds = len/nSteps;
 	vec3 dir = path/len;

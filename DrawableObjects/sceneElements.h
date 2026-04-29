@@ -13,6 +13,9 @@ struct sceneElements {
 	Camera * cam;
 	FrameBufferObject * sceneFBO;
 	bool wireframe = false;
+	
+	int weatherState = 0; // 0=Sunny, 1=Sunset, 2=Rain, 3=Storm
+	float rainIntensity = 0.0f;
 };
 
 #endif

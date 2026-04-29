@@ -25,7 +25,7 @@ terrain::expected<Shader> Shader::loadFrom(const std::filesystem::path& shaderPa
 	glShaderSource(shaderId, 1, &code_cstr, NULL);
 	glCompileShader(shaderId);
 
-	std::string error_log = checkShaderCompileErrors(shaderId, shadType, shaderPath.filename());
+	std::string error_log = checkShaderCompileErrors(shaderId, shadType, shaderPath.string());
 
 	if(!error_log.empty())
 		return terrain::error(std::move(error_log));
@@ -46,8 +46,10 @@ terrain::expected<std::string> Shader::_loadTextFromFile(const std::filesystem::
 	shaderFile.open(shaderPath);
 	shaderStream << shaderFile.rdbuf();
 
-	if (!shaderFile.good())
+	if (!shaderFile.good()) {
+		std::cout << "FAILED TO OPEN SHADER FILE: " << shaderPath.string() << std::endl;
 		return terrain::error("An error occurred while reading " + shaderPath.string());
+	}
 	
 	return shaderStream.str();
 
@@ -73,12 +75,12 @@ Shader::~Shader()
 
 std::string Shader::getName() const
 {
-	return _path.filename().stem();
+    return _path.filename().stem().string();
 }
 
 std::filesystem::path Shader::getPath() const
 {
-	return _path;
+    return _path;
 }
 
 shaderType Shader::getType() const 

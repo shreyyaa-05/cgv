@@ -79,7 +79,7 @@ void main()
     // Light offset. 
     vec3 l = vec3(lightPos.xy, 0.5);
     
-	const int SAMPLES = 64;
+	const int SAMPLES = 16;
 	float illuminationDecay = 1.0;
 
 	vec2 tc = uv;

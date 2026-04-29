@@ -27,12 +27,14 @@ public:
 	virtual void update();
 	virtual void setGui();
 
+	float coverage, density;
+
 private:
 	gl::ShadingProgram _volumetricCloudsShader;
 	gl::ShadingProgram _weatherShader;
 	ScreenSpaceShader * postProcessingShader;
 
-	float coverage, cloudSpeed, crispiness, curliness, density, absorption;
+	float cloudSpeed, crispiness, curliness, absorption;
 	float earthRadius, sphereInnerRadius, sphereOuterRadius;
 	float perlinFrequency;
 	bool enableGodRays;

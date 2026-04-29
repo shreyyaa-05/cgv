@@ -159,10 +159,10 @@ void CloudsModel::generateWeatherMap() {
 void CloudsModel::initVariables()
 {
 	cloudSpeed = 450.0;
-	coverage = 0.45;
-	crispiness = 40.;
+	coverage = 0.65;
+	crispiness = 60.;
 	curliness = .1;
-	density = 0.02;
+	density = 0.05;
 	absorption = 0.35;
 
 	earthRadius = 600000.0;

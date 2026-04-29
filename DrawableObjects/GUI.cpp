@@ -42,6 +42,10 @@ void GUI::draw()
 
 		ImGui::Checkbox("Wireframe mode", &scene.wireframe);
 
+		ImGui::Text("Weather Presets");
+		const char* weatherItems[] = { "Sunny", "Sunset", "Rain", "Storm" };
+		ImGui::Combo("Weather", &scene.weatherState, weatherItems, IM_ARRAYSIZE(weatherItems));
+
 		if (ImGui::Button("Generate seed"))
 			scene.seed = genRandomVec3();
 		//ImGui::SameLine();

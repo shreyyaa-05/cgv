@@ -41,28 +41,55 @@ public:
 	float MouseSensitivity;
 	float Zoom;
 
+	// Smooth camera attributes
+	glm::vec3 TargetPosition;
+	float TargetYaw;
+	float TargetPitch;
+	float PositionInterpolationSpeed = 10.0f;
+	float RotationInterpolationSpeed = 15.0f;
+
 	// Constructor with vectors
 	Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : Front(glm::vec3(0.0f, 0.0f, -5.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
 	{
 		Position = position;
+		TargetPosition = position;
 		WorldUp = up;
 		Yaw = yaw;
+		TargetYaw = yaw;
 		Pitch = pitch;
+		TargetPitch = pitch;
 		updateCameraVectors();
 	}
 	// Constructor with scalar values
 	Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
 	{
 		Position = glm::vec3(posX, posY, posZ);
+		TargetPosition = Position;
 		WorldUp = glm::vec3(upX, upY, upZ);
 		Yaw = yaw;
+		TargetYaw = yaw;
 		Pitch = pitch;
+		TargetPitch = pitch;
+		updateCameraVectors();
+	}
+
+	// Update smooth interpolation, called before GetViewMatrix
+	void UpdateSmooth(float deltaTime)
+	{
+		// Interpolate position
+		Position = glm::mix(Position, TargetPosition, glm::clamp(PositionInterpolationSpeed * deltaTime, 0.0f, 1.0f));
+		
+		// Interpolate rotation
+		Yaw = glm::mix(Yaw, TargetYaw, glm::clamp(RotationInterpolationSpeed * deltaTime, 0.0f, 1.0f));
+		Pitch = glm::mix(Pitch, TargetPitch, glm::clamp(RotationInterpolationSpeed * deltaTime, 0.0f, 1.0f));
+		
 		updateCameraVectors();
 	}
 
 	// Returns the view matrix calculated using Euler Angles and the LookAt Matrix
 	glm::mat4 GetViewMatrix()
 	{
+		// Ensure vectors are up to date with current interpolated values
 		updateCameraVectors();
 		return glm::lookAt(Position, Position + Front, Up);
 	}
@@ -72,13 +99,13 @@ public:
 	{
 		float velocity = MovementSpeed * deltaTime;
 		if (direction == FORWARD)
-			Position += Front * velocity;
+			TargetPosition += Front * velocity;
 		if (direction == BACKWARD)
-			Position -= Front * velocity;
+			TargetPosition -= Front * velocity;
 		if (direction == LEFT)
-			Position -= Right * velocity;
+			TargetPosition -= Right * velocity;
 		if (direction == RIGHT)
-			Position += Right * velocity;
+			TargetPosition += Right * velocity;
 
 		//projectCameraPosition();
 	}
@@ -156,20 +183,20 @@ public:
 		xoffset *= MouseSensitivity;
 		yoffset *= MouseSensitivity;
 
-		Yaw += xoffset;
-		Pitch += yoffset;
+		TargetYaw += xoffset;
+		TargetPitch += yoffset;
 
 		// Make sure that when pitch is out of bounds, screen doesn't get flipped
 		if (constrainPitch)
 		{
-			if (Pitch > 89.0f)
-				Pitch = 89.0f;
-			if (Pitch < -89.0f)
-				Pitch = -89.0f;
+			if (TargetPitch > 89.0f)
+				TargetPitch = 89.0f;
+			if (TargetPitch < -89.0f)
+				TargetPitch = -89.0f;
 		}
 
 		// Update Front, Right and Up Vectors using the updated Euler angles
-		updateCameraVectors();
+		// No need to call updateCameraVectors() here, it is handled in UpdateSmooth()
 	}
 
 	// Processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis

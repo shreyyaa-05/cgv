@@ -1,12 +1,13 @@
 #include <glad/glad.h>
 #include <iostream>
+#include <sstream>
 
 #include "shaderUtils.h"
 
 namespace terrain::gl
 {
 
-constexpr uint64_t kMaxLogSize = 1024 * 1024;
+constexpr uint64_t kMaxLogSize = 4096;
 
 std::string checkShaderCompileErrors(GLuint shaderId, shaderType type, const std::string& shaderName)
 {

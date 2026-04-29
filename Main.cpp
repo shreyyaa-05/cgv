@@ -1,4 +1,4 @@
-﻿#ifndef GLAD_H
+#ifndef GLAD_H
 #define GLAD_H
 #include <glad/glad.h>
 #endif
@@ -39,7 +39,7 @@
 
 int main()
 {
-
+    try {
 	// camera and window setup
 	glm::vec3 startPosition(0.0f, 800.0f, 0.0f);
 	Camera camera(startPosition);
@@ -102,8 +102,14 @@ int main()
 		scene.lightPos = scene.lightDir*1e6f + camera.Position;
 
 		// input
-		float frametime = 1 / ImGui::GetIO().Framerate;
+		static float lastFrameTime = glfwGetTime();
+		float currentFrameTime = glfwGetTime();
+		float frametime = currentFrameTime - lastFrameTime;
+		lastFrameTime = currentFrameTime;
+		if (frametime > 0.1f) frametime = 0.1f;
+		if (frametime < 0.001f) frametime = 0.001f;
 		window.processInput(frametime);
+		scene.cam->UpdateSmooth(frametime);
 
 		//update tiles position to make the world infinite, clouds weather map and sky colors
 		terrain.updateTilesPositions();
@@ -112,6 +118,39 @@ int main()
 		skybox.update();
 
 		SceneFBO.bind();
+
+		// Smooth Weather Interpolation
+		float targetCoverage = 0.5f;
+		float targetDensity = 0.05f;
+		float targetRain = 0.0f;
+		float targetLightY = 0.8f;
+		
+		if (scene.weatherState == 0) { // Sunny
+			targetCoverage = 0.4f;
+			targetDensity = 0.02f;
+			targetLightY = 0.8f;
+			targetRain = 0.0f;
+		} else if (scene.weatherState == 1) { // Sunset
+			targetCoverage = 0.6f;
+			targetDensity = 0.04f;
+			targetLightY = 0.15f; // Low sun
+			targetRain = 0.0f;
+		} else if (scene.weatherState == 2) { // Rain
+			targetCoverage = 0.8f;
+			targetDensity = 0.1f;
+			targetLightY = 0.4f;
+			targetRain = 0.5f;
+		} else if (scene.weatherState == 3) { // Storm
+			targetCoverage = 0.95f;
+			targetDensity = 0.15f;
+			targetLightY = 0.4f;
+			targetRain = 1.0f;
+		}
+
+		cloudsModel.coverage = glm::mix(cloudsModel.coverage, targetCoverage, 1.0f * frametime);
+		cloudsModel.density = glm::mix(cloudsModel.density, targetDensity, 1.0f * frametime);
+		scene.rainIntensity = glm::mix(scene.rainIntensity, targetRain, 1.0f * frametime);
+		scene.lightDir.y = glm::mix(scene.lightDir.y, targetLightY, 1.0f * frametime);
 
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
@@ -200,6 +239,8 @@ int main()
 		post.setSampler2D("cloudDistance", volumetricClouds.getCloudsTexture(terrain::VolumetricClouds::cloudDistance), 3);
 
 		post.setBool("wireframe", scene.wireframe);
+		post.setFloat("time", glfwGetTime());
+		post.setFloat("rainIntensity", scene.rainIntensity);
 
 		post.setMat4("VP", scene.projMatrix * view);
 		PostProcessing.draw();
@@ -217,4 +258,12 @@ int main()
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		window.swapBuffersAndPollEvents();
 	}
+    } catch (const std::exception& e) {
+        std::cerr << "EXCEPTION CAUGHT: " << e.what() << std::endl;
+        return 1;
+    } catch (...) {
+        std::cerr << "UNKNOWN EXCEPTION CAUGHT" << std::endl;
+        return 1;
+    }
+    return 0;
 }

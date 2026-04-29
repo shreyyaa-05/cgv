@@ -80,7 +80,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # Find required packages
 find_package(OpenGL REQUIRED)
-find_package(glfw3 REQUIRED)
+find_package(glfw3 CONFIG REQUIRED)
 
 # Add executable
 add_executable(${PROJECT_NAME} ${SRC_FILES} ${SRC_FILES_DRAWABLEOBJECTS} ${CMAKE_SOURCE_DIR}/Main.cpp )
@@ -97,7 +97,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 )
 
 # Add compile options and definitions
-target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic -g -fno-omit-frame-pointer -O3)
+target_compile_options(${PROJECT_NAME} PRIVATE /W4 /W4 -pedantic -g -fno-omit-frame-pointer -O3)
 target_compile_definitions(${PROJECT_NAME} PRIVATE RESOURCE_PATH="${CMAKE_SOURCE_DIR}/resources/")
 
 # Set include directories for the target
