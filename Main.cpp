@@ -41,8 +41,8 @@ int main()
 {
     try {
 	// camera and window setup
-	glm::vec3 startPosition(0.0f, 800.0f, 0.0f);
-	Camera camera(startPosition, glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 20.0f);
+	glm::vec3 startPosition(-5964.67f, 321.56f, 410.78f);
+	Camera camera(startPosition, glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f);
 
 	int success;
 	Window window(success, 1600, 900);
@@ -60,7 +60,7 @@ int main()
 	FrameBufferObject SceneFBO(Window::SCR_WIDTH, Window::SCR_HEIGHT);
 	glm::vec3 lightPosition, seed;
 	glm::mat4 proj = glm::perspective(glm::radians(camera.Zoom), (float)Window::SCR_WIDTH / (float)Window::SCR_HEIGHT, 5.f, 10000000.0f);
-	glm::vec3 lightDir = glm::vec3(-.5, 0.5, 1.0);
+	glm::vec3 lightDir = glm::normalize(glm::vec3(0.100f, 0.407f, 0.776f));
 
 	//Every scene object need these informations to be rendered
 	sceneElements scene;
@@ -126,9 +126,9 @@ int main()
 		float targetLightY = 0.8f;
 		
 		if (scene.weatherState == 0) { // Sunny
-			targetCoverage = 0.6f;
-			targetDensity = 0.08f;
-			targetLightY = 0.8f;
+			targetCoverage = 0.365f;
+			targetDensity = 0.020f;
+			targetLightY = 0.407f;
 			targetRain = 0.0f;
 		} else if (scene.weatherState == 1) { // Sunset
 			targetCoverage = 0.7f;

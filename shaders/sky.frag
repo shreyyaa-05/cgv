@@ -42,21 +42,18 @@ vec2 computeScreenPos(vec2 ndc){
 	return (ndc*0.5 + 0.5);
 }
 
-vec3 getSun(const vec3 d){
-	float sun = dot(SUN_DIR, d);
-	// Corona
-	vec3 corona = 0.8 * vec3(1.0, 0.6, 0.1) * pow(clamp(sun, 0.0, 1.0), 350.0);
-	// Sharp sun disc
-	float sunDisc = smoothstep(0.9995, 0.9999, sun);
-	vec3 discColor = vec3(1.0, 0.95, 0.8) * sunDisc * 5.0; // HDR brightness
-	return corona + discColor;
+vec3 getSun(const vec3 d, float powExp){
+	float sun = clamp( dot(SUN_DIR,d), 0.0, 1.0 );
+	vec3 col = 0.8*vec3(1.0,.6,0.1)*pow( sun, powExp );
+	return col;
 }
 vec4 colorCubeMap(vec3 endPos, const vec3 d)
 {
     // background sky     
+	//vec3 col = vec3(0.6,0.71,0.85) - endPos.y*0.2*vec3(1.0,0.5,1.0) + 0.15*0.5;
 	vec3 col = mix(skyColorBottom, skyColorTop, clamp(1.0 - exp(8.5-17.0*clamp(normalize(d).y*0.5 + 0.5,0.0,1.0)),0.0,1.0));
 	
-	col += getSun(d);
+	col += getSun(d, 350.0);
 
 	return vec4(col, 1.0);
 }
