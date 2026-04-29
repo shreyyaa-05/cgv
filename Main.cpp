@@ -42,7 +42,7 @@ int main()
     try {
 	// camera and window setup
 	glm::vec3 startPosition(0.0f, 800.0f, 0.0f);
-	Camera camera(startPosition);
+	Camera camera(startPosition, glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 20.0f);
 
 	int success;
 	Window window(success, 1600, 900);
@@ -126,13 +126,13 @@ int main()
 		float targetLightY = 0.8f;
 		
 		if (scene.weatherState == 0) { // Sunny
-			targetCoverage = 0.4f;
-			targetDensity = 0.02f;
+			targetCoverage = 0.6f;
+			targetDensity = 0.08f;
 			targetLightY = 0.8f;
 			targetRain = 0.0f;
 		} else if (scene.weatherState == 1) { // Sunset
-			targetCoverage = 0.6f;
-			targetDensity = 0.04f;
+			targetCoverage = 0.7f;
+			targetDensity = 0.1f;
 			targetLightY = 0.15f; // Low sun
 			targetRain = 0.0f;
 		} else if (scene.weatherState == 2) { // Rain
@@ -151,6 +151,18 @@ int main()
 		cloudsModel.density = glm::mix(cloudsModel.density, targetDensity, 1.0f * frametime);
 		scene.rainIntensity = glm::mix(scene.rainIntensity, targetRain, 1.0f * frametime);
 		scene.lightDir.y = glm::mix(scene.lightDir.y, targetLightY, 1.0f * frametime);
+		
+		// If raining or stormy, darken the sky and fog!
+		float darknessFactor = 1.0f;
+		if (scene.weatherState == 2) darknessFactor = 0.6f;
+		if (scene.weatherState == 3) darknessFactor = 0.2f; // Very dark!
+		
+		static float currentDarkness = 1.0f;
+		currentDarkness = glm::mix(currentDarkness, darknessFactor, 1.0f * frametime);
+		
+		skybox.skyColorTop *= currentDarkness;
+		skybox.skyColorBottom *= currentDarkness;
+		scene.fogColor *= currentDarkness;
 
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);

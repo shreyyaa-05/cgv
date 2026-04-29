@@ -33,9 +33,9 @@ public:
 		return skyboxFBO->tex;
 	}
 
-private:
 	glm::vec3 skyColorTop, skyColorBottom;
 
+private:
 	terrain::ScreenSpaceShader * skyboxShader;
 	FrameBufferObject * skyboxFBO;
 
